@@ -12,9 +12,9 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || "";
 
 const DEFAULT_FOLDERS = [
-  { id: "1MfFv0Vu0_HmIklhMEft5cE00FEn-tu6i", name: "weitere Belege ab 25.03.2026" },
-  { id: "1oI1anACwOv7K5ruffInXcawurIUkNObZ", name: "weitere Belege ab 23.03.2026" },
-  { id: "11gOcCepouw9mWJ0h7G18E1LkDX2aZh7k", name: "Weitere Belege ab 23.03.2026" },
+  { id: "1wpUyCfh4XSXoysVnVUZxkol8H9KzuLhN", name: "März" },
+  { id: "1c-q56hFiknGU9b4OUHwE6xZ-g7i3yotm", name: "April" },
+  { id: "1arlYM5innCGpY0TTUlwZ47vKEcslvmLx", name: "Mai" },
 ];
 
 const KATEGORIEN = ["Rechnung", "Quittung", "Vertrag", "Kontoauszug", "Sonstiges"];
