@@ -641,8 +641,16 @@ export default function BelegScanner() {
                   ))}
                 </div>
 
-                <div style={{marginTop:12,padding:"9px 12px",borderRadius:9,background:"rgba(27,221,221,0.03)",border:"1px solid rgba(27,221,221,0.08)",display:"flex",alignItems:"center",gap:7,fontSize:11.5,color:"rgba(255,255,255,0.4)"}}>
-                  <Icon name="folder" size={14} color="#1BDDDD"/> {folderName}
+                <div style={{marginTop:12,padding:"7px 10px 7px 12px",borderRadius:9,background:"rgba(27,221,221,0.03)",border:"1px solid rgba(27,221,221,0.08)",display:"flex",alignItems:"center",gap:7}}>
+                  <Icon name="folder" size={14} color="#1BDDDD"/>
+                  <span style={{fontSize:11.5,color:"rgba(255,255,255,0.4)",fontWeight:600}}>Monat:</span>
+                  <select value={folder} onChange={e=>setFolder(e.target.value)} style={{
+                    flex:1,background:"transparent",border:"none",color:"#1BDDDD",fontSize:12.5,fontWeight:600,outline:"none",cursor:"pointer",appearance:"none",paddingRight:18,
+                    backgroundImage:`url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%231BDDDD' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")`,
+                    backgroundRepeat:"no-repeat",backgroundPosition:"right 2px center",
+                  }}>
+                    {DEFAULT_FOLDERS.map(f=><option key={f.id} value={f.id} style={{background:"#13131e",color:"#eee"}}>{f.name}</option>)}
+                  </select>
                 </div>
 
                 {/* Upload progress */}
