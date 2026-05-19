@@ -226,9 +226,67 @@ function Spinner({ size = 44 }) {
 }
 
 // ============================================================
+// PRIVACY POLICY (route: /privacy)
+// ============================================================
+function PrivacyPolicy() {
+  return (
+    <div style={{minHeight:"100vh",background:"#06060b",color:"#eee",fontFamily:"'Montserrat',sans-serif",padding:"40px 20px"}}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');*{box-sizing:border-box;margin:0;padding:0}body{background:#06060b}a{color:#1BDDDD}h1,h2{margin-bottom:12px}h2{margin-top:24px}p,li{line-height:1.6;color:rgba(255,255,255,0.75)}ul{margin-left:20px;margin-top:8px}`}</style>
+      <div style={{maxWidth:720,margin:"0 auto"}}>
+        <a href="/" style={{fontSize:13,opacity:0.6}}>← zurück zur App</a>
+        <h1 style={{marginTop:20,fontSize:26,background:"linear-gradient(135deg,#E8197A,#1BDDDD)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Datenschutzerklärung</h1>
+        <p style={{fontSize:12,opacity:0.5,marginTop:4}}>Beleg-Scanner · Stand Mai 2026</p>
+
+        <h2 style={{fontSize:17,color:"#fff"}}>Verantwortlicher</h2>
+        <p>NoLimitCA<br/>Jasmin Labrenz<br/>An der Varreler Bäke 49 a<br/>28259 Bremen, Deutschland<br/>E-Mail: <a href="mailto:jasmin@jasminlabrenz.com">jasmin@jasminlabrenz.com</a></p>
+
+        <h2 style={{fontSize:17,color:"#fff"}}>Welche Daten verarbeiten wir</h2>
+        <p>Beleg-Scanner ist eine reine Browser-Anwendung. Wir betreiben keine eigene Datenbank und speichern keine personenbezogenen Daten auf eigenen Servern.</p>
+
+        <h2 style={{fontSize:17,color:"#fff"}}>Beim Login mit Google</h2>
+        <p>Wenn du dich mit deinem Google-Konto anmeldest, übermittelt Google deinen Namen und einen Zugriffstoken an die App. Beides wird ausschließlich lokal in deinem Browser gespeichert (im sogenannten localStorage). Mit „Abmelden" werden diese Daten gelöscht.</p>
+
+        <h2 style={{fontSize:17,color:"#fff"}}>Beim Hochladen von Belegen</h2>
+        <p>Die fotografierten oder hochgeladenen Belege werden direkt von deinem Browser an Google Drive übertragen — in einen Ordner, auf den dir Zugriff gewährt wurde. Wir leiten diese Dateien nicht über eigene Server.</p>
+
+        <h2 style={{fontSize:17,color:"#fff"}}>Berechtigungen</h2>
+        <p>Die App nutzt ausschließlich den Google-Drive-Scope <code style={{background:"rgba(255,255,255,0.05)",padding:"1px 6px",borderRadius:4}}>drive.file</code>. Damit kann sie nur Dateien sehen und ändern, die sie selbst über dich angelegt hat. Sie hat keinen Zugriff auf andere Inhalte deines Drives.</p>
+
+        <h2 style={{fontSize:17,color:"#fff"}}>Drittanbieter</h2>
+        <ul>
+          <li>Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA — für OAuth-Login und Drive-Speicherung.</li>
+          <li>Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA — Hosting der Anwendung.</li>
+        </ul>
+
+        <h2 style={{fontSize:17,color:"#fff"}}>Cookies</h2>
+        <p>Wir setzen keine Cookies. Lokal gespeichert werden ausschließlich der Google-Zugriffstoken und dein Anzeigename — beides löschbar durch Logout oder Löschen der Browserdaten.</p>
+
+        <h2 style={{fontSize:17,color:"#fff"}}>Deine Rechte</h2>
+        <p>Du hast jederzeit das Recht auf Auskunft, Berichtigung, Löschung und Widerspruch nach DSGVO. Da wir selbst keine personenbezogenen Daten speichern, erfolgt die Datenlöschung primär durch Löschen deiner Drive-Dateien und der Browser-Daten.</p>
+
+        <h2 style={{fontSize:17,color:"#fff"}}>Kontakt</h2>
+        <p>Bei Fragen zum Datenschutz: <a href="mailto:jasmin@jasminlabrenz.com">jasmin@jasminlabrenz.com</a></p>
+
+        <p style={{marginTop:32,fontSize:11,opacity:0.4}}>Stand: Mai 2026</p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// ROUTER
+// ============================================================
+export default function App() {
+  if (typeof window !== "undefined" && window.location.pathname === "/privacy") {
+    return <PrivacyPolicy />;
+  }
+  return <BelegScanner />;
+}
+
+// ============================================================
 // MAIN APP
 // ============================================================
-export default function BelegScanner() {
+function BelegScanner() {
   const [tab, setTab] = useState(TAB.HOME);
   const [kat, setKat] = useState("Rechnung");
   const [files, setFiles] = useState([]);
@@ -688,6 +746,9 @@ export default function BelegScanner() {
         {/* FOOTER */}
         <p style={{ textAlign: "center", marginTop: 20, fontSize: 10, color: "rgba(255,255,255,0.15)", animation: "fadeIn 0.6s ease-out 0.4s both" }}>
           Beleg-Scanner · Deine Belege, sicher in Google Drive
+        </p>
+        <p style={{ textAlign: "center", marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
+          <a href="/privacy" style={{color:"rgba(27,221,221,0.55)",textDecoration:"none"}}>Datenschutz</a>
         </p>
       </div>
     </div>
