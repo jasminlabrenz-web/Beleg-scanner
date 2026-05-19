@@ -23,6 +23,17 @@ const DEFAULT_FOLDERS = [
   { id: "1QLeP2j1XSW707HRmhruAkNxqBVgsxniY", name: "Dezember" },
 ];
 
+const MONTH_NAMES = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+
+function folderForDate(datum) {
+  if (!datum) return null;
+  const parts = datum.split("-");
+  if (parts.length !== 3) return null;
+  const m = parseInt(parts[1], 10) - 1;
+  if (Number.isNaN(m) || m < 0 || m > 11) return null;
+  return DEFAULT_FOLDERS.find(f => f.name === MONTH_NAMES[m]) || null;
+}
+
 const KATEGORIEN = ["Rechnung", "Quittung", "Vertrag", "Kontoauszug", "Sonstiges"];
 const TAB = { HOME: "home", CAMERA: "camera", PREVIEW: "preview", SETUP: "setup" };
 
@@ -219,7 +230,6 @@ function Spinner({ size = 44 }) {
 // ============================================================
 export default function BelegScanner() {
   const [tab, setTab] = useState(TAB.HOME);
-  const [folder, setFolder] = useState(DEFAULT_FOLDERS[0].id);
   const [kat, setKat] = useState("Rechnung");
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -313,15 +323,19 @@ export default function BelegScanner() {
     if (!token) { setErr("Bitte erst mit Google einloggen."); return; }
     if (!files.length) return;
     setUploading(true); setResults([]); setUploadProgress(0);
-    const monatsName = DEFAULT_FOLDERS.find(f => f.id === folder)?.name || "Belege";
     const res = [];
 
     for (let i = 0; i < files.length; i++) {
       const f = files[i];
       setUploadProgress(Math.round(((i) / files.length) * 100));
       try {
+        const monthFolder = folderForDate(f.datum);
+        if (!monthFolder) {
+          throw new Error(`Kein Ordner für ${f.datum || "(leeres Datum)"} — Datum prüfen`);
+        }
+        const monatsName = monthFolder.name;
         const subName = f.zahlung === "bank" ? "Bank" : "Bar";
-        const targetFolderId = await getOrCreateSubfolder(token, folder, subName);
+        const targetFolderId = await getOrCreateSubfolder(token, monthFolder.id, subName);
 
         let uploadedName;
         if (f.isBewirtung) {
@@ -357,7 +371,6 @@ export default function BelegScanner() {
 
   useEffect(() => () => { if (stream) stream.getTracks().forEach(t => t.stop()); }, [stream]);
 
-  const folderName = DEFAULT_FOLDERS.find(f => f.id === folder)?.name;
   const needsSetup = !GOOGLE_CLIENT_ID;
 
   return (
@@ -459,12 +472,7 @@ export default function BelegScanner() {
           {/* ====== HOME ====== */}
           {!needsSetup && tab === TAB.HOME && (
             <div style={{ padding: 20 }}>
-              <label style={lbl}>Zielordner</label>
-              <select value={folder} onChange={e => setFolder(e.target.value)} style={sel}>
-                {DEFAULT_FOLDERS.map(f => <option key={f.id} value={f.id} style={{background:"#13131e"}}>{f.name}</option>)}
-              </select>
-
-              <label style={{...lbl,marginTop:16}}>Kategorie</label>
+              <label style={lbl}>Kategorie</label>
               <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>
                 {KATEGORIEN.map(k=>(
                   <button key={k} onClick={()=>setKat(k)} style={{
@@ -641,17 +649,6 @@ export default function BelegScanner() {
                   ))}
                 </div>
 
-                <div style={{marginTop:12,padding:"7px 10px 7px 12px",borderRadius:9,background:"rgba(27,221,221,0.03)",border:"1px solid rgba(27,221,221,0.08)",display:"flex",alignItems:"center",gap:7}}>
-                  <Icon name="folder" size={14} color="#1BDDDD"/>
-                  <span style={{fontSize:11.5,color:"rgba(255,255,255,0.4)",fontWeight:600}}>Monat:</span>
-                  <select value={folder} onChange={e=>setFolder(e.target.value)} style={{
-                    flex:1,background:"transparent",border:"none",color:"#1BDDDD",fontSize:12.5,fontWeight:600,outline:"none",cursor:"pointer",appearance:"none",paddingRight:18,
-                    backgroundImage:`url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%231BDDDD' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")`,
-                    backgroundRepeat:"no-repeat",backgroundPosition:"right 2px center",
-                  }}>
-                    {DEFAULT_FOLDERS.map(f=><option key={f.id} value={f.id} style={{background:"#13131e",color:"#eee"}}>{f.name}</option>)}
-                  </select>
-                </div>
 
                 {/* Upload progress */}
                 {uploading && (
