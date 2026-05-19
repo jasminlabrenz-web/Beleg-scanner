@@ -12,6 +12,23 @@ import { jsPDF } from "jspdf";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || "";
 
+// ============================================================
+// DESIGN TOKENS — Brand: Blue #7371FC, Rose #fc60a8 · Apple-Look
+// ============================================================
+const APPLE_FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif';
+const BRAND_BLUE = "#7371FC";
+const BRAND_ROSE = "#fc60a8";
+const TEXT_PRIMARY = "#1d1d1f";
+const TEXT_SECONDARY = "#6e6e73";
+const TEXT_TERTIARY = "#86868b";
+const SURFACE_PRIMARY = "#FFFFFF";
+const SURFACE_SECONDARY = "#F5F5F7";
+const SURFACE_TERTIARY = "#FBFBFD";
+const BORDER_SUBTLE = "rgba(0,0,0,0.08)";
+const BORDER_MEDIUM = "rgba(0,0,0,0.12)";
+const SHADOW_SOFT = "0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06)";
+const SHADOW_LIFTED = "0 4px 12px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.08)";
+
 const DEFAULT_FOLDERS = [
   { id: "1WVRpggmT2pHkzv0DzVAWu9r2vcDB0GP6", name: "Mai" },
   { id: "1guqonjZ7Zq2cHdWZSy9enUYv_n0wiryn", name: "Juni" },
@@ -222,7 +239,7 @@ function Icon({ name, size = 20, color = "currentColor" }) {
 }
 
 function Spinner({ size = 44 }) {
-  return <div style={{ width: size, height: size, border: "3px solid rgba(232,25,122,0.12)", borderTopColor: "#E8197A", borderRadius: "50%", animation: "spin 0.75s linear infinite" }} />;
+  return <div style={{ width: size, height: size, border: "3px solid rgba(115,113,252,0.12)", borderTopColor: "#7371FC", borderRadius: "50%", animation: "spin 0.75s linear infinite" }} />;
 }
 
 // ============================================================
@@ -230,44 +247,44 @@ function Spinner({ size = 44 }) {
 // ============================================================
 function PrivacyPolicy() {
   return (
-    <div style={{minHeight:"100vh",background:"#06060b",color:"#eee",fontFamily:"'Montserrat',sans-serif",padding:"40px 20px"}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');*{box-sizing:border-box;margin:0;padding:0}body{background:#06060b}a{color:#1BDDDD}h1,h2{margin-bottom:12px}h2{margin-top:24px}p,li{line-height:1.6;color:rgba(255,255,255,0.75)}ul{margin-left:20px;margin-top:8px}`}</style>
-      <div style={{maxWidth:720,margin:"0 auto"}}>
-        <a href="/" style={{fontSize:13,opacity:0.6}}>← zurück zur App</a>
-        <h1 style={{marginTop:20,fontSize:26,background:"linear-gradient(135deg,#E8197A,#1BDDDD)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Datenschutzerklärung</h1>
-        <p style={{fontSize:12,opacity:0.5,marginTop:4}}>Beleg-Scanner · Stand Mai 2026</p>
+    <div style={{minHeight:"100vh",background:"#FFFFFF",color:TEXT_PRIMARY,fontFamily:APPLE_FONT,padding:"56px 24px",WebkitFontSmoothing:"antialiased"}}>
+      <style>{`*{box-sizing:border-box;margin:0;padding:0}body{background:#FFFFFF;color:${TEXT_PRIMARY}}a{color:${BRAND_BLUE};text-decoration:none;font-weight:500}a:hover{text-decoration:underline}h1,h2{margin-bottom:14px;letter-spacing:-0.02em}h2{margin-top:28px}p,li{line-height:1.6;color:${TEXT_SECONDARY};font-size:15px}ul{margin-left:22px;margin-top:8px}`}</style>
+      <div style={{maxWidth:680,margin:"0 auto"}}>
+        <a href="/" style={{fontSize:14,color:TEXT_SECONDARY}}>← zurück zur App</a>
+        <h1 style={{marginTop:24,fontSize:34,fontWeight:700,background:`linear-gradient(135deg,${BRAND_BLUE},${BRAND_ROSE})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",letterSpacing:"-0.03em"}}>Datenschutzerklärung</h1>
+        <p style={{fontSize:14,color:TEXT_TERTIARY,marginTop:6}}>Beleg-Scanner · Stand Mai 2026</p>
 
-        <h2 style={{fontSize:17,color:"#fff"}}>Verantwortlicher</h2>
+        <h2 style={{fontSize:20,fontWeight:600,color:TEXT_PRIMARY}}>Verantwortlicher</h2>
         <p>NoLimitCA<br/>Jasmin Labrenz<br/>An der Varreler Bäke 49 a<br/>28259 Bremen, Deutschland<br/>E-Mail: <a href="mailto:jasmin@jasminlabrenz.com">jasmin@jasminlabrenz.com</a></p>
 
-        <h2 style={{fontSize:17,color:"#fff"}}>Welche Daten verarbeiten wir</h2>
+        <h2 style={{fontSize:20,fontWeight:600,color:TEXT_PRIMARY}}>Welche Daten verarbeiten wir</h2>
         <p>Beleg-Scanner ist eine reine Browser-Anwendung. Wir betreiben keine eigene Datenbank und speichern keine personenbezogenen Daten auf eigenen Servern.</p>
 
-        <h2 style={{fontSize:17,color:"#fff"}}>Beim Login mit Google</h2>
+        <h2 style={{fontSize:20,fontWeight:600,color:TEXT_PRIMARY}}>Beim Login mit Google</h2>
         <p>Wenn du dich mit deinem Google-Konto anmeldest, übermittelt Google deinen Namen und einen Zugriffstoken an die App. Beides wird ausschließlich lokal in deinem Browser gespeichert (im sogenannten localStorage). Mit „Abmelden" werden diese Daten gelöscht.</p>
 
-        <h2 style={{fontSize:17,color:"#fff"}}>Beim Hochladen von Belegen</h2>
+        <h2 style={{fontSize:20,fontWeight:600,color:TEXT_PRIMARY}}>Beim Hochladen von Belegen</h2>
         <p>Die fotografierten oder hochgeladenen Belege werden direkt von deinem Browser an Google Drive übertragen — in einen Ordner, auf den dir Zugriff gewährt wurde. Wir leiten diese Dateien nicht über eigene Server.</p>
 
-        <h2 style={{fontSize:17,color:"#fff"}}>Berechtigungen</h2>
-        <p>Die App nutzt ausschließlich den Google-Drive-Scope <code style={{background:"rgba(255,255,255,0.05)",padding:"1px 6px",borderRadius:4}}>drive.file</code>. Damit kann sie nur Dateien sehen und ändern, die sie selbst über dich angelegt hat. Sie hat keinen Zugriff auf andere Inhalte deines Drives.</p>
+        <h2 style={{fontSize:20,fontWeight:600,color:TEXT_PRIMARY}}>Berechtigungen</h2>
+        <p>Die App nutzt ausschließlich den Google-Drive-Scope <code style={{background:SURFACE_SECONDARY,padding:"2px 7px",borderRadius:6,fontSize:13,color:TEXT_PRIMARY}}>drive.file</code>. Damit kann sie nur Dateien sehen und ändern, die sie selbst über dich angelegt hat. Sie hat keinen Zugriff auf andere Inhalte deines Drives.</p>
 
-        <h2 style={{fontSize:17,color:"#fff"}}>Drittanbieter</h2>
+        <h2 style={{fontSize:20,fontWeight:600,color:TEXT_PRIMARY}}>Drittanbieter</h2>
         <ul>
           <li>Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA — für OAuth-Login und Drive-Speicherung.</li>
           <li>Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA — Hosting der Anwendung.</li>
         </ul>
 
-        <h2 style={{fontSize:17,color:"#fff"}}>Cookies</h2>
+        <h2 style={{fontSize:20,fontWeight:600,color:TEXT_PRIMARY}}>Cookies</h2>
         <p>Wir setzen keine Cookies. Lokal gespeichert werden ausschließlich der Google-Zugriffstoken und dein Anzeigename — beides löschbar durch Logout oder Löschen der Browserdaten.</p>
 
-        <h2 style={{fontSize:17,color:"#fff"}}>Deine Rechte</h2>
+        <h2 style={{fontSize:20,fontWeight:600,color:TEXT_PRIMARY}}>Deine Rechte</h2>
         <p>Du hast jederzeit das Recht auf Auskunft, Berichtigung, Löschung und Widerspruch nach DSGVO. Da wir selbst keine personenbezogenen Daten speichern, erfolgt die Datenlöschung primär durch Löschen deiner Drive-Dateien und der Browser-Daten.</p>
 
-        <h2 style={{fontSize:17,color:"#fff"}}>Kontakt</h2>
+        <h2 style={{fontSize:20,fontWeight:600,color:TEXT_PRIMARY}}>Kontakt</h2>
         <p>Bei Fragen zum Datenschutz: <a href="mailto:jasmin@jasminlabrenz.com">jasmin@jasminlabrenz.com</a></p>
 
-        <p style={{marginTop:32,fontSize:11,opacity:0.4}}>Stand: Mai 2026</p>
+        <p style={{marginTop:40,fontSize:13,color:TEXT_TERTIARY}}>Stand: Mai 2026</p>
       </div>
     </div>
   );
@@ -432,58 +449,55 @@ function BelegScanner() {
   const needsSetup = !GOOGLE_CLIENT_ID;
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(155deg, #06060b 0%, #0d0d18 45%, #091015 100%)", fontFamily: "'Montserrat',sans-serif", color: "#eee", position: "relative" }}>
+    <div style={{ minHeight: "100vh", background: "#FFFFFF", fontFamily: APPLE_FONT, color: TEXT_PRIMARY, position: "relative", WebkitFontSmoothing: "antialiased", MozOsxFontSmoothing: "grayscale" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
-        @keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
         @keyframes spin{to{transform:rotate(360deg)}}
-        @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,25,122,0.3)}50%{box-shadow:0 0 0 12px rgba(232,25,122,0)}}
-        @keyframes dragPulse{0%,100%{border-color:rgba(27,221,221,0.25)}50%{border-color:rgba(27,221,221,0.7)}}
-        @keyframes glow{0%,100%{opacity:.35}50%{opacity:.7}}
+        @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(115,113,252,0.28)}70%{box-shadow:0 0 0 14px rgba(115,113,252,0)}100%{box-shadow:0 0 0 0 rgba(115,113,252,0)}}
+        @keyframes dragPulse{0%,100%{border-color:rgba(115,113,252,0.35)}50%{border-color:rgba(115,113,252,0.8)}}
         @keyframes progressBar{from{width:0}to{width:100%}}
         *{box-sizing:border-box;margin:0;padding:0}
-        body{background:#06060b}
-        input,select,button{font-family:'Montserrat',sans-serif}
-        ::-webkit-scrollbar{width:3px}
-        ::-webkit-scrollbar-thumb{background:rgba(232,25,122,0.2);border-radius:4px}
+        body{background:#FFFFFF;color:${TEXT_PRIMARY}}
+        input,select,button,textarea{font-family:${APPLE_FONT};-webkit-font-smoothing:antialiased}
+        ::-webkit-scrollbar{width:6px;height:6px}
+        ::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:6px}
+        ::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.25)}
       `}</style>
-
-      <div style={{position:"fixed",top:-140,right:-140,width:380,height:380,borderRadius:"50%",background:"radial-gradient(circle,rgba(232,25,122,0.05) 0%,transparent 70%)",pointerEvents:"none",animation:"glow 7s ease-in-out infinite"}}/>
-      <div style={{position:"fixed",bottom:-120,left:-100,width:320,height:320,borderRadius:"50%",background:"radial-gradient(circle,rgba(27,221,221,0.04) 0%,transparent 70%)",pointerEvents:"none",animation:"glow 9s ease-in-out infinite 3s"}}/>
 
       <div style={{ position:"relative", zIndex:1, maxWidth:500, margin:"0 auto", padding:"10px 16px 36px" }}>
 
         {/* HEADER */}
-        <div style={{ textAlign:"center", padding:"22px 0 6px", animation:"slideUp 0.5s ease-out" }}>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:9, background:"linear-gradient(135deg,rgba(232,25,122,0.08),rgba(27,221,221,0.05))", borderRadius:14, padding:"9px 22px", border:"1px solid rgba(232,25,122,0.13)" }}>
-            <span style={{fontSize:22}}>📸</span>
-            <span style={{ fontSize:18, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8197A,#1BDDDD)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Beleg-Scanner</span>
+        <div style={{ textAlign:"center", padding:"32px 0 14px", animation:"slideUp 0.5s ease-out" }}>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:10 }}>
+            <span style={{fontSize:26}}>📸</span>
+            <span style={{ fontSize:28, fontWeight:700, letterSpacing:"-0.025em", background:`linear-gradient(135deg,${BRAND_BLUE},${BRAND_ROSE})`, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Beleg-Scanner</span>
           </div>
-          <p style={{ marginTop:7, fontSize:10.5, color:"rgba(255,255,255,0.3)", fontWeight:500, letterSpacing:"0.07em", textTransform:"uppercase" }}>
-            Fotografieren · Hochladen → Google Drive
+          <p style={{ marginTop:10, fontSize:14, color:TEXT_SECONDARY, fontWeight:400, letterSpacing:"-0.01em" }}>
+            Fotografieren · Hochladen · Google Drive
           </p>
         </div>
 
         {/* AUTH BAR */}
         {!needsSetup && (
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:"8px 0 14px", animation:"fadeIn 0.5s ease-out 0.1s both" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:"4px 0 18px", animation:"fadeIn 0.5s ease-out 0.1s both" }}>
             {authed ? (
-              <>
-                <div style={{ width:8, height:8, borderRadius:"50%", background:"#1BDDDD" }} />
-                <span style={{ fontSize:11.5, color:"rgba(255,255,255,0.45)", fontWeight:500 }}>
-                  {userName ? `Eingeloggt als ${userName}` : "Mit Google verbunden"}
+              <div style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 14px", borderRadius:100, background:SURFACE_SECONDARY }}>
+                <div style={{ width:7, height:7, borderRadius:"50%", background:"#34c759" }} />
+                <span style={{ fontSize:12.5, color:TEXT_SECONDARY, fontWeight:500 }}>
+                  {userName ? userName : "Mit Google verbunden"}
                 </span>
-                <button onClick={logout} style={{ background:"none", border:"none", cursor:"pointer", padding:2, opacity:0.4 }}>
-                  <Icon name="logout" size={14} color="#ff6b6b" />
+                <button onClick={logout} style={{ background:"none", border:"none", cursor:"pointer", padding:"2px 4px", marginLeft:2, color:TEXT_TERTIARY, fontSize:11, fontWeight:500 }}>
+                  Abmelden
                 </button>
-              </>
+              </div>
             ) : (
               <button onClick={startGoogleAuth} style={{
-                display:"flex", alignItems:"center", gap:8,
-                padding:"10px 20px", borderRadius:12,
-                background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)",
-                color:"#eee", fontSize:13, fontWeight:600, cursor:"pointer",
+                display:"flex", alignItems:"center", gap:10,
+                padding:"12px 22px", borderRadius:12,
+                background:SURFACE_PRIMARY, border:`1px solid ${BORDER_MEDIUM}`,
+                color:TEXT_PRIMARY, fontSize:14, fontWeight:500, cursor:"pointer",
+                boxShadow:SHADOW_SOFT, transition:"all 0.15s",
               }}>
                 <Icon name="google" size={18} /> Mit Google anmelden
               </button>
@@ -492,16 +506,16 @@ function BelegScanner() {
         )}
 
         {/* MAIN CARD */}
-        <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.05)", borderRadius:20, overflow:"hidden", animation:"slideUp 0.6s ease-out 0.06s both" }}>
+        <div style={{ background:SURFACE_PRIMARY, border:`1px solid ${BORDER_SUBTLE}`, borderRadius:20, overflow:"hidden", animation:"slideUp 0.6s ease-out 0.06s both", boxShadow:SHADOW_SOFT }}>
 
           {/* ====== SETUP NEEDED ====== */}
           {needsSetup && tab !== TAB.SETUP && (
-            <div style={{ padding: 24, textAlign: "center" }}>
-              <div style={{ fontSize: 40, marginBottom: 16 }}>⚙️</div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.7)", marginBottom: 8 }}>
+            <div style={{ padding: 32, textAlign: "center" }}>
+              <div style={{ fontSize: 44, marginBottom: 18 }}>⚙️</div>
+              <p style={{ fontSize: 17, fontWeight: 600, color: TEXT_PRIMARY, marginBottom: 8, letterSpacing:"-0.01em" }}>
                 Einrichtung erforderlich
               </p>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.6, marginBottom: 20 }}>
+              <p style={{ fontSize: 14, color: TEXT_SECONDARY, lineHeight: 1.5, marginBottom: 22 }}>
                 Du brauchst eine Google Cloud Client ID, damit die App auf Google Drive zugreifen kann.
               </p>
               <button onClick={() => setTab(TAB.SETUP)} style={{ ...btnP, width: "100%" }}>
@@ -512,32 +526,32 @@ function BelegScanner() {
 
           {/* ====== SETUP PAGE ====== */}
           {tab === TAB.SETUP && (
-            <div style={{ padding: 20, animation: "slideUp 0.3s ease-out" }}>
-              <label style={lbl}>So richtest du die App ein:</label>
-              <div style={{ marginTop: 12, fontSize: 12.5, color: "rgba(255,255,255,0.55)", lineHeight: 1.8 }}>
-                <p><strong style={{ color: "#E8197A" }}>1.</strong> Gehe zu <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" style={{ color: "#1BDDDD" }}>Google Cloud Console</a></p>
-                <p><strong style={{ color: "#E8197A" }}>2.</strong> Erstelle ein neues Projekt oder wähle ein bestehendes</p>
-                <p><strong style={{ color: "#E8197A" }}>3.</strong> Aktiviere die "Google Drive API"</p>
-                <p><strong style={{ color: "#E8197A" }}>4.</strong> Erstelle unter "Credentials" eine "OAuth 2.0 Client ID" (Typ: Web Application)</p>
-                <p><strong style={{ color: "#E8197A" }}>5.</strong> Füge als Redirect URI hinzu: <code style={{ background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>{window.location.origin}/</code></p>
-                <p><strong style={{ color: "#E8197A" }}>6.</strong> Kopiere die Client ID</p>
-                <p><strong style={{ color: "#E8197A" }}>7.</strong> Setze sie in Vercel als Umgebungsvariable: <code style={{ background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>VITE_GOOGLE_CLIENT_ID</code></p>
+            <div style={{ padding: 24, animation: "slideUp 0.3s ease-out" }}>
+              <label style={lbl}>So richtest du die App ein</label>
+              <div style={{ marginTop: 14, fontSize: 14, color: TEXT_SECONDARY, lineHeight: 1.7 }}>
+                <p><strong style={{ color: BRAND_BLUE }}>1.</strong> Gehe zu <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" style={{ color: BRAND_BLUE, textDecoration:"none", fontWeight:500 }}>Google Cloud Console</a></p>
+                <p><strong style={{ color: BRAND_BLUE }}>2.</strong> Erstelle ein neues Projekt oder wähle ein bestehendes</p>
+                <p><strong style={{ color: BRAND_BLUE }}>3.</strong> Aktiviere die „Google Drive API"</p>
+                <p><strong style={{ color: BRAND_BLUE }}>4.</strong> Erstelle unter „Credentials" eine „OAuth 2.0 Client ID" (Typ: Web Application)</p>
+                <p><strong style={{ color: BRAND_BLUE }}>5.</strong> Füge als Redirect URI hinzu: <code style={{ background: SURFACE_SECONDARY, padding: "2px 6px", borderRadius: 4, fontSize: 12, color:TEXT_PRIMARY }}>{window.location.origin}/</code></p>
+                <p><strong style={{ color: BRAND_BLUE }}>6.</strong> Kopiere die Client ID</p>
+                <p><strong style={{ color: BRAND_BLUE }}>7.</strong> Setze sie in Vercel als Umgebungsvariable: <code style={{ background: SURFACE_SECONDARY, padding: "2px 6px", borderRadius: 4, fontSize: 12, color:TEXT_PRIMARY }}>VITE_GOOGLE_CLIENT_ID</code></p>
               </div>
-              <button onClick={() => setTab(TAB.HOME)} style={{ ...btnO, width: "100%", marginTop: 20 }}>Zurück</button>
+              <button onClick={() => setTab(TAB.HOME)} style={{ ...btnO, width: "100%", marginTop: 22 }}>Zurück</button>
             </div>
           )}
 
           {/* ====== HOME ====== */}
           {!needsSetup && tab === TAB.HOME && (
-            <div style={{ padding: 20 }}>
+            <div style={{ padding: 24 }}>
               <label style={lbl}>Kategorie</label>
-              <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>
+              <div style={{display:"flex",flexWrap:"wrap",gap:7,marginTop:8}}>
                 {KATEGORIEN.map(k=>(
                   <button key={k} onClick={()=>setKat(k)} style={{
-                    padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",transition:"all 0.15s",
-                    border:kat===k?"1px solid #E8197A":"1px solid rgba(255,255,255,0.07)",
-                    background:kat===k?"rgba(232,25,122,0.1)":"transparent",
-                    color:kat===k?"#E8197A":"rgba(255,255,255,0.45)",
+                    padding:"8px 16px",borderRadius:100,fontSize:13,fontWeight:500,cursor:"pointer",transition:"all 0.15s",
+                    border:kat===k?`1px solid ${BRAND_BLUE}`:`1px solid ${BORDER_SUBTLE}`,
+                    background:kat===k?BRAND_BLUE:SURFACE_PRIMARY,
+                    color:kat===k?"#FFFFFF":TEXT_SECONDARY,
                   }}>{k}</button>
                 ))}
               </div>
@@ -549,62 +563,63 @@ function BelegScanner() {
                 onDrop={onDrop}
                 onClick={()=>fileRef.current?.click()}
                 style={{
-                  marginTop:20,padding:"28px 16px",
-                  border:dragOver?"2px solid #1BDDDD":"2px dashed rgba(255,255,255,0.08)",
+                  marginTop:22,padding:"32px 16px",
+                  border:dragOver?`2px solid ${BRAND_BLUE}`:`2px dashed ${BORDER_MEDIUM}`,
                   borderRadius:16,textAlign:"center",cursor:"pointer",
-                  background:dragOver?"rgba(27,221,221,0.05)":"rgba(255,255,255,0.01)",
-                  transition:"all 0.2s",animation:dragOver?"dragPulse 1s infinite":"none",
+                  background:dragOver?"rgba(115,113,252,0.04)":SURFACE_TERTIARY,
+                  transition:"all 0.2s",animation:dragOver?"dragPulse 1.2s infinite":"none",
                 }}
               >
-                <div style={{marginBottom:8,opacity:0.45}}><Icon name="upload" size={26} color={dragOver?"#1BDDDD":"#E8197A"}/></div>
-                <p style={{fontSize:13.5,fontWeight:600,color:dragOver?"#1BDDDD":"rgba(255,255,255,0.55)"}}>
-                  {dragOver?"Hier ablegen!":"Dateien hierher ziehen"}
+                <div style={{marginBottom:10}}><Icon name="upload" size={28} color={dragOver?BRAND_BLUE:TEXT_TERTIARY}/></div>
+                <p style={{fontSize:15,fontWeight:600,color:dragOver?BRAND_BLUE:TEXT_PRIMARY,letterSpacing:"-0.01em"}}>
+                  {dragOver?"Hier ablegen":"Dateien hierher ziehen"}
                 </p>
-                <p style={{fontSize:11,color:"rgba(255,255,255,0.25)",marginTop:3}}>oder klicken · JPG, PNG, PDF</p>
+                <p style={{fontSize:13,color:TEXT_SECONDARY,marginTop:4}}>oder tippen · JPG, PNG, PDF</p>
               </div>
               <input ref={fileRef} type="file" accept="image/*,.pdf" multiple onChange={onFileInput} style={{display:"none"}}/>
 
               {/* Camera button */}
-              <button onClick={startCam} style={{...btnP,width:"100%",marginTop:16,animation:"pulse 2.5s infinite"}}>
+              <button onClick={startCam} style={{...btnP,width:"100%",marginTop:14}}>
                 <Icon name="camera" size={18}/> Beleg fotografieren
               </button>
 
               {/* Queue badge */}
               {files.length > 0 && (
                 <button onClick={()=>setTab(TAB.PREVIEW)} style={{
-                  width:"100%",marginTop:10,padding:"12px 16px",borderRadius:12,cursor:"pointer",
-                  background:"rgba(232,25,122,0.06)",border:"1px solid rgba(232,25,122,0.15)",
-                  display:"flex",alignItems:"center",gap:10,color:"#E8197A",fontSize:13,fontWeight:600,
+                  width:"100%",marginTop:10,padding:"14px 16px",borderRadius:12,cursor:"pointer",
+                  background:SURFACE_SECONDARY,border:"none",
+                  display:"flex",alignItems:"center",gap:10,color:BRAND_BLUE,fontSize:14,fontWeight:600,
+                  transition:"all 0.15s",
                 }}>
-                  <Icon name="file" size={16} color="#E8197A"/>
+                  <Icon name="file" size={16} color={BRAND_BLUE}/>
                   {files.length} {files.length===1?"Beleg":"Belege"} bereit zum Hochladen
-                  <span style={{marginLeft:"auto",fontSize:11,opacity:0.6}}>→</span>
+                  <span style={{marginLeft:"auto",fontSize:14,color:TEXT_TERTIARY}}>›</span>
                 </button>
               )}
 
               {err && (
-                <div style={{marginTop:12,padding:"10px 14px",borderRadius:10,background:"rgba(255,70,70,0.07)",border:"1px solid rgba(255,70,70,0.18)",fontSize:12,color:"#ff6b6b",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div style={{marginTop:12,padding:"12px 14px",borderRadius:12,background:"#fef0f0",border:"1px solid #ffc8c8",fontSize:13,color:"#c8202b",display:"flex",justifyContent:"space-between",alignItems:"center",gap:10}}>
                   <span>{err}</span>
-                  <button onClick={()=>setErr("")} style={{background:"none",border:"none",color:"#ff6b6b",fontWeight:700,cursor:"pointer",fontSize:11}}>OK</button>
+                  <button onClick={()=>setErr("")} style={{background:"none",border:"none",color:"#c8202b",fontWeight:600,cursor:"pointer",fontSize:12}}>OK</button>
                 </div>
               )}
 
               {/* History */}
               {history.length>0&&(
-                <div style={{marginTop:22}}>
+                <div style={{marginTop:26}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                     <label style={lbl}>Letzte Uploads</label>
-                    <button onClick={()=>{setHistory([]);localStorage.removeItem("beleg_history")}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.25)",fontSize:10,cursor:"pointer"}}>Leeren</button>
+                    <button onClick={()=>{setHistory([]);localStorage.removeItem("beleg_history")}} style={{background:"none",border:"none",color:TEXT_TERTIARY,fontSize:12,cursor:"pointer",fontWeight:500}}>Leeren</button>
                   </div>
-                  <div style={{marginTop:7,display:"flex",flexDirection:"column",gap:5}}>
+                  <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:6}}>
                     {history.slice(0,8).map((h,i)=>(
-                      <div key={i} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 12px",borderRadius:10,background:"rgba(255,255,255,0.015)",border:"1px solid rgba(255,255,255,0.035)"}}>
-                        <div style={{width:30,height:30,borderRadius:7,background:"rgba(27,221,221,0.07)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                          <Icon name="check" size={14} color="#1BDDDD"/>
+                      <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,background:SURFACE_TERTIARY,border:`1px solid ${BORDER_SUBTLE}`}}>
+                        <div style={{width:30,height:30,borderRadius:8,background:"rgba(115,113,252,0.1)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                          <Icon name="check" size={14} color={BRAND_BLUE}/>
                         </div>
                         <div style={{flex:1,minWidth:0}}>
-                          <p style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.7)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.name}</p>
-                          <p style={{fontSize:10,color:"rgba(255,255,255,0.25)"}}>{h.folder} · {h.ts}</p>
+                          <p style={{fontSize:13,fontWeight:500,color:TEXT_PRIMARY,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.name}</p>
+                          <p style={{fontSize:11.5,color:TEXT_SECONDARY,marginTop:1}}>{h.folder} · {h.ts}</p>
                         </div>
                       </div>
                     ))}
@@ -618,15 +633,15 @@ function BelegScanner() {
           {tab===TAB.CAMERA&&(
             <div style={{position:"relative",background:"#000"}}>
               <video ref={vidRef} autoPlay playsInline muted style={{width:"100%",display:"block",minHeight:370}}/>
-              <div style={{position:"absolute",inset:26,border:"2px solid rgba(232,25,122,0.25)",borderRadius:14,pointerEvents:"none"}}>
-                {[{t:-2,l:-2,bT:"3px solid #E8197A",bL:"3px solid #E8197A"},{t:-2,r:-2,bT:"3px solid #E8197A",bR:"3px solid #E8197A"},{b:-2,l:-2,bB:"3px solid #1BDDDD",bL:"3px solid #1BDDDD"},{b:-2,r:-2,bB:"3px solid #1BDDDD",bR:"3px solid #1BDDDD"}].map((s,i)=>(
-                  <div key={i} style={{position:"absolute",width:20,height:20,borderRadius:3,top:s.t,left:s.l,right:s.r,bottom:s.b,borderTop:s.bT,borderLeft:s.bL,borderRight:s.bR,borderBottom:s.bB}}/>
+              <div style={{position:"absolute",inset:26,border:"2px solid rgba(255,255,255,0.4)",borderRadius:18,pointerEvents:"none"}}>
+                {[{t:-2,l:-2,bT:`3px solid ${BRAND_BLUE}`,bL:`3px solid ${BRAND_BLUE}`},{t:-2,r:-2,bT:`3px solid ${BRAND_BLUE}`,bR:`3px solid ${BRAND_BLUE}`},{b:-2,l:-2,bB:`3px solid ${BRAND_ROSE}`,bL:`3px solid ${BRAND_ROSE}`},{b:-2,r:-2,bB:`3px solid ${BRAND_ROSE}`,bR:`3px solid ${BRAND_ROSE}`}].map((s,i)=>(
+                  <div key={i} style={{position:"absolute",width:22,height:22,borderRadius:3,top:s.t,left:s.l,right:s.r,bottom:s.b,borderTop:s.bT,borderLeft:s.bL,borderRight:s.bR,borderBottom:s.bB}}/>
                 ))}
               </div>
-              <p style={{position:"absolute",top:10,width:"100%",textAlign:"center",fontSize:11,color:"rgba(255,255,255,0.55)",fontWeight:500,textShadow:"0 1px 8px rgba(0,0,0,0.8)"}}>Beleg im Rahmen positionieren</p>
-              <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"22px",background:"linear-gradient(transparent,rgba(0,0,0,0.88))",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <button onClick={()=>{stopCam();setTab(TAB.HOME)}} style={camB}><Icon name="x" size={19}/></button>
-                <button onClick={snap} style={{width:66,height:66,borderRadius:"50%",background:"linear-gradient(135deg,#E8197A,#c41568)",border:"4px solid rgba(255,255,255,0.22)",cursor:"pointer",boxShadow:"0 0 26px rgba(232,25,122,0.4)"}}/>
+              <p style={{position:"absolute",top:14,width:"100%",textAlign:"center",fontSize:13,color:"#FFFFFF",fontWeight:500,textShadow:"0 1px 8px rgba(0,0,0,0.8)"}}>Beleg im Rahmen positionieren</p>
+              <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"24px",background:"linear-gradient(transparent,rgba(0,0,0,0.88))",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <button onClick={()=>{stopCam();setTab(TAB.HOME)}} style={camB}><Icon name="x" size={20}/></button>
+                <button onClick={snap} style={{width:72,height:72,borderRadius:"50%",background:"#FFFFFF",border:`4px solid ${BRAND_BLUE}`,cursor:"pointer",boxShadow:"0 4px 24px rgba(115,113,252,0.5)"}}/>
                 <button onClick={flipCam} style={camB}><Icon name="flip" size={18}/></button>
               </div>
               <canvas ref={canRef} style={{display:"none"}}/>
@@ -636,71 +651,71 @@ function BelegScanner() {
           {/* ====== PREVIEW / QUEUE ====== */}
           {tab===TAB.PREVIEW&&(
             <div style={{animation:"slideUp 0.3s ease-out"}}>
-              <div style={{padding:20}}>
+              <div style={{padding:24}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <button onClick={()=>setTab(TAB.HOME)} style={{background:"none",border:"none",cursor:"pointer",color:"rgba(255,255,255,0.4)",padding:2}}><Icon name="back" size={18}/></button>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <button onClick={()=>setTab(TAB.HOME)} style={{background:"none",border:"none",cursor:"pointer",color:TEXT_SECONDARY,padding:4,display:"flex",alignItems:"center"}}><Icon name="back" size={20}/></button>
                     <label style={{...lbl,margin:0}}>{files.length} {files.length===1?"Beleg":"Belege"}</label>
                   </div>
-                  <button onClick={()=>fileRef.current?.click()} style={{background:"none",border:"none",color:"#1BDDDD",fontSize:12,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
-                    <Icon name="plus" size={14} color="#1BDDDD"/> Weitere
+                  <button onClick={()=>fileRef.current?.click()} style={{background:"none",border:"none",color:BRAND_BLUE,fontSize:14,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
+                    <Icon name="plus" size={16} color={BRAND_BLUE}/> Weitere
                   </button>
                   <input ref={fileRef} type="file" accept="image/*,.pdf" multiple onChange={onFileInput} style={{display:"none"}}/>
                 </div>
 
-                <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:10,maxHeight:420,overflowY:"auto",paddingRight:3}}>
+                <div style={{marginTop:14,display:"flex",flexDirection:"column",gap:12,maxHeight:440,overflowY:"auto",paddingRight:4,marginRight:-4}}>
                   {files.map(f=>(
-                    <div key={f.id} style={{padding:11,borderRadius:13,background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.05)"}}>
-                      <div style={{display:"flex",alignItems:"center",gap:9}}>
+                    <div key={f.id} style={{padding:14,borderRadius:14,background:SURFACE_TERTIARY,border:`1px solid ${BORDER_SUBTLE}`}}>
+                      <div style={{display:"flex",alignItems:"center",gap:11}}>
                         {f.type.startsWith("image/")&&f.dataUrl?(
-                          <img src={f.dataUrl} alt="" style={{width:44,height:44,borderRadius:7,objectFit:"cover"}}/>
+                          <img src={f.dataUrl} alt="" style={{width:48,height:48,borderRadius:10,objectFit:"cover"}}/>
                         ):(
-                          <div style={{width:44,height:44,borderRadius:7,background:"rgba(232,25,122,0.06)",display:"flex",alignItems:"center",justifyContent:"center"}}><Icon name="file" size={18} color="#E8197A"/></div>
+                          <div style={{width:48,height:48,borderRadius:10,background:"rgba(115,113,252,0.1)",display:"flex",alignItems:"center",justifyContent:"center"}}><Icon name="file" size={20} color={BRAND_BLUE}/></div>
                         )}
                         <div style={{flex:1,minWidth:0}}>
                           <input value={f.name} onChange={e=>updateFileMeta(f.id,{name:e.target.value})} style={{
-                            width:"100%",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.06)",color:"#eee",fontSize:12,fontWeight:500,padding:"2px 0",outline:"none",
+                            width:"100%",background:"transparent",border:"none",borderBottom:`1px solid ${BORDER_SUBTLE}`,color:TEXT_PRIMARY,fontSize:13.5,fontWeight:500,padding:"3px 0",outline:"none",
                           }}/>
-                          <p style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:2}}>{f.kat} · {f.size>0?`${(f.size/1024).toFixed(0)} KB`:""}</p>
+                          <p style={{fontSize:11.5,color:TEXT_SECONDARY,marginTop:3}}>{f.kat} · {f.size>0?`${(f.size/1024).toFixed(0)} KB`:""}</p>
                         </div>
-                        <button onClick={()=>rmFile(f.id)} style={{background:"none",border:"none",cursor:"pointer",padding:3,opacity:0.35}}>
-                          <Icon name="trash" size={15} color="#ff6b6b"/>
+                        <button onClick={()=>rmFile(f.id)} style={{background:"none",border:"none",cursor:"pointer",padding:6,color:TEXT_TERTIARY,display:"flex",alignItems:"center"}}>
+                          <Icon name="trash" size={16}/>
                         </button>
                       </div>
 
-                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:10}}>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:14}}>
                         <div>
-                          <label style={{...lbl,fontSize:9}}>Datum</label>
+                          <label style={{...lbl,fontSize:11}}>Datum</label>
                           <input type="date" value={f.datum||""} onChange={e=>updateFileMeta(f.id,{datum:e.target.value})} style={miniInput}/>
                         </div>
                         <div>
-                          <label style={{...lbl,fontSize:9}}>Zahlung</label>
-                          <div style={{display:"flex",gap:5,marginTop:6}}>
+                          <label style={{...lbl,fontSize:11}}>Zahlung</label>
+                          <div style={{display:"flex",gap:6,marginTop:6}}>
                             {["bar","bank"].map(z=>(
                               <button key={z} onClick={()=>updateFileMeta(f.id,{zahlung:z})} style={{
-                                flex:1,padding:"7px 6px",borderRadius:8,fontSize:11,fontWeight:600,cursor:"pointer",
-                                border:f.zahlung===z?"1px solid #E8197A":"1px solid rgba(255,255,255,0.07)",
-                                background:f.zahlung===z?"rgba(232,25,122,0.1)":"transparent",
-                                color:f.zahlung===z?"#E8197A":"rgba(255,255,255,0.45)",
-                                textTransform:"capitalize",
+                                flex:1,padding:"8px 6px",borderRadius:10,fontSize:12.5,fontWeight:500,cursor:"pointer",
+                                border:f.zahlung===z?`1px solid ${BRAND_BLUE}`:`1px solid ${BORDER_SUBTLE}`,
+                                background:f.zahlung===z?BRAND_BLUE:SURFACE_PRIMARY,
+                                color:f.zahlung===z?"#FFFFFF":TEXT_SECONDARY,
+                                transition:"all 0.15s",
                               }}>{z==="bar"?"Bar":"Bank/Karte"}</button>
                             ))}
                           </div>
                         </div>
                       </div>
 
-                      <label style={{display:"flex",alignItems:"center",gap:7,marginTop:10,cursor:"pointer",userSelect:"none"}}>
-                        <input type="checkbox" checked={!!f.isBewirtung} onChange={e=>updateFileMeta(f.id,{isBewirtung:e.target.checked})} style={{accentColor:"#E8197A",width:14,height:14}}/>
-                        <span style={{fontSize:11.5,fontWeight:600,color:f.isBewirtung?"#E8197A":"rgba(255,255,255,0.5)"}}>Bewirtungsbeleg (mit Pflichtangaben)</span>
+                      <label style={{display:"flex",alignItems:"center",gap:9,marginTop:14,cursor:"pointer",userSelect:"none"}}>
+                        <input type="checkbox" checked={!!f.isBewirtung} onChange={e=>updateFileMeta(f.id,{isBewirtung:e.target.checked})} style={{accentColor:BRAND_ROSE,width:16,height:16}}/>
+                        <span style={{fontSize:13,fontWeight:500,color:f.isBewirtung?BRAND_ROSE:TEXT_PRIMARY}}>Bewirtungsbeleg (mit Pflichtangaben)</span>
                       </label>
 
                       {f.isBewirtung && (
-                        <div style={{marginTop:8,padding:10,borderRadius:9,background:"rgba(232,25,122,0.04)",border:"1px solid rgba(232,25,122,0.12)"}}>
-                          <label style={{...lbl,fontSize:9}}>Anlass / Grund der Bewirtung</label>
+                        <div style={{marginTop:10,padding:12,borderRadius:12,background:"rgba(252,96,168,0.05)",border:`1px solid rgba(252,96,168,0.18)`}}>
+                          <label style={{...lbl,fontSize:11}}>Anlass / Grund der Bewirtung</label>
                           <input value={f.anlass||""} onChange={e=>updateFileMeta(f.id,{anlass:e.target.value})} placeholder="z.B. Geschäftsessen Projektabstimmung" style={miniInput}/>
-                          <label style={{...lbl,fontSize:9,marginTop:9}}>Bewirtete Personen</label>
-                          <textarea value={f.personen||""} onChange={e=>updateFileMeta(f.id,{personen:e.target.value})} placeholder="z.B. Max Mustermann (Firma X), Erika Müller (Firma Y)" rows={2} style={{...miniInput,resize:"vertical",minHeight:48,fontFamily:"inherit"}}/>
-                          <p style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:6,lineHeight:1.5}}>Tag der Bewirtung = Beleg-Datum oben. Wird als PDF mit Pflichtangaben + Foto in Drive abgelegt.</p>
+                          <label style={{...lbl,fontSize:11,marginTop:11}}>Bewirtete Personen</label>
+                          <textarea value={f.personen||""} onChange={e=>updateFileMeta(f.id,{personen:e.target.value})} placeholder="z.B. Max Mustermann (Firma X), Erika Müller (Firma Y)" rows={2} style={{...miniInput,resize:"vertical",minHeight:52,fontFamily:"inherit"}}/>
+                          <p style={{fontSize:11.5,color:TEXT_SECONDARY,marginTop:7,lineHeight:1.5}}>Tag der Bewirtung = Beleg-Datum oben. Wird als PDF mit Pflichtangaben + Foto in Drive abgelegt.</p>
                         </div>
                       )}
                     </div>
@@ -710,31 +725,31 @@ function BelegScanner() {
 
                 {/* Upload progress */}
                 {uploading && (
-                  <div style={{ marginTop: 12 }}>
-                    <div style={{ height: 4, borderRadius: 2, background: "rgba(255,255,255,0.05)", overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${uploadProgress}%`, background: "linear-gradient(90deg, #E8197A, #1BDDDD)", borderRadius: 2, transition: "width 0.3s" }} />
+                  <div style={{ marginTop: 14 }}>
+                    <div style={{ height: 6, borderRadius: 3, background: SURFACE_SECONDARY, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${uploadProgress}%`, background: `linear-gradient(90deg, ${BRAND_BLUE}, ${BRAND_ROSE})`, borderRadius: 3, transition: "width 0.3s" }} />
                     </div>
-                    <p style={{ fontSize: 10.5, color: "rgba(255,255,255,0.35)", marginTop: 4, textAlign: "center" }}>{uploadProgress}%</p>
+                    <p style={{ fontSize: 12, color: TEXT_SECONDARY, marginTop: 6, textAlign: "center" }}>{uploadProgress}%</p>
                   </div>
                 )}
 
                 {results.length>0&&(
-                  <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:5}}>
+                  <div style={{marginTop:14,display:"flex",flexDirection:"column",gap:6}}>
                     {results.map(r=>(
-                      <div key={r.id} style={{padding:"9px 12px",borderRadius:9,background:r.ok?"rgba(27,221,221,0.05)":"rgba(255,70,70,0.06)",border:`1px solid ${r.ok?"rgba(27,221,221,0.12)":"rgba(255,70,70,0.15)"}`,display:"flex",alignItems:"center",gap:7}}>
-                        <Icon name={r.ok?"check":"x"} size={14} color={r.ok?"#1BDDDD":"#ff5050"}/>
-                        <div><p style={{fontSize:11.5,fontWeight:600,color:"rgba(255,255,255,0.65)"}}>{r.name}</p><p style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>{r.msg}</p></div>
+                      <div key={r.id} style={{padding:"11px 13px",borderRadius:12,background:r.ok?"rgba(115,113,252,0.06)":"#fef0f0",border:`1px solid ${r.ok?"rgba(115,113,252,0.18)":"#ffc8c8"}`,display:"flex",alignItems:"center",gap:9}}>
+                        <Icon name={r.ok?"check":"x"} size={16} color={r.ok?BRAND_BLUE:"#c8202b"}/>
+                        <div><p style={{fontSize:13,fontWeight:500,color:TEXT_PRIMARY}}>{r.name}</p><p style={{fontSize:11.5,color:TEXT_SECONDARY,marginTop:1}}>{r.msg}</p></div>
                       </div>
                     ))}
                   </div>
                 )}
 
-                <div style={{display:"flex",gap:9,marginTop:16}}>
+                <div style={{display:"flex",gap:10,marginTop:18}}>
                   <button onClick={clearAll} style={{...btnO,flex:1}}>{results.length?"Fertig":"Verwerfen"}</button>
                   {!results.length&&(
-                    <button onClick={uploadAll} disabled={uploading||!files.length||!authed} style={{...btnP,flex:2,opacity:(uploading||!authed)?0.55:1}}>
+                    <button onClick={uploadAll} disabled={uploading||!files.length||!authed} style={{...btnP,flex:2,opacity:(uploading||!authed)?0.55:1,cursor:(uploading||!authed)?"not-allowed":"pointer"}}>
                       {uploading?<Spinner size={18}/>:<Icon name="upload" size={17}/>}
-                      {uploading?"Lädt hoch...":!authed?"Erst einloggen":`${files.length} hochladen`}
+                      {uploading?"Lädt hoch …":!authed?"Erst einloggen":`${files.length} hochladen`}
                     </button>
                   )}
                 </div>
@@ -744,20 +759,20 @@ function BelegScanner() {
         </div>
 
         {/* FOOTER */}
-        <p style={{ textAlign: "center", marginTop: 20, fontSize: 10, color: "rgba(255,255,255,0.15)", animation: "fadeIn 0.6s ease-out 0.4s both" }}>
-          Beleg-Scanner · Deine Belege, sicher in Google Drive
+        <p style={{ textAlign: "center", marginTop: 26, fontSize: 12, color: TEXT_TERTIARY, animation: "fadeIn 0.6s ease-out 0.4s both" }}>
+          Deine Belege, sicher in Google Drive
         </p>
-        <p style={{ textAlign: "center", marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
-          <a href="/privacy" style={{color:"rgba(27,221,221,0.55)",textDecoration:"none"}}>Datenschutz</a>
+        <p style={{ textAlign: "center", marginTop: 6, fontSize: 12 }}>
+          <a href="/privacy" style={{color:BRAND_BLUE,textDecoration:"none",fontWeight:500}}>Datenschutz</a>
         </p>
       </div>
     </div>
   );
 }
 
-const lbl={display:"block",fontSize:10,fontWeight:700,color:"rgba(255,255,255,0.35)",textTransform:"uppercase",letterSpacing:"0.08em"};
-const sel={width:"100%",marginTop:6,padding:"10px 14px",background:"rgba(255,255,255,0.035)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:11,color:"#eee",fontSize:13,outline:"none",cursor:"pointer",appearance:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23E8197A' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")`,backgroundRepeat:"no-repeat",backgroundPosition:"right 14px center"};
-const btnP={padding:"13px 18px",borderRadius:13,background:"linear-gradient(135deg,#E8197A,#c41568)",border:"none",color:"#fff",fontSize:13.5,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:7,transition:"all 0.15s"};
-const btnO={padding:"13px",borderRadius:13,background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.55)",fontSize:13,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:7};
-const camB={width:42,height:42,borderRadius:"50%",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.13)",color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"};
-const miniInput={width:"100%",marginTop:5,padding:"7px 10px",background:"rgba(255,255,255,0.035)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,color:"#eee",fontSize:12,outline:"none"};
+const lbl={display:"block",fontSize:11,fontWeight:600,color:TEXT_SECONDARY,letterSpacing:"-0.005em"};
+const sel={width:"100%",marginTop:8,padding:"11px 38px 11px 14px",background:SURFACE_PRIMARY,border:`1px solid ${BORDER_SUBTLE}`,borderRadius:11,color:TEXT_PRIMARY,fontSize:14,outline:"none",cursor:"pointer",appearance:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%237371FC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,backgroundRepeat:"no-repeat",backgroundPosition:"right 14px center"};
+const btnP={padding:"14px 18px",borderRadius:12,background:BRAND_BLUE,border:"none",color:"#FFFFFF",fontSize:15,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,transition:"all 0.15s",letterSpacing:"-0.01em",boxShadow:"0 1px 2px rgba(115,113,252,0.2), 0 4px 14px rgba(115,113,252,0.22)"};
+const btnO={padding:"14px",borderRadius:12,background:SURFACE_SECONDARY,border:"none",color:TEXT_PRIMARY,fontSize:14.5,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:7,transition:"all 0.15s",letterSpacing:"-0.005em"};
+const camB={width:46,height:46,borderRadius:"50%",background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",color:"#FFFFFF",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)"};
+const miniInput={width:"100%",marginTop:6,padding:"9px 12px",background:SURFACE_PRIMARY,border:`1px solid ${BORDER_SUBTLE}`,borderRadius:10,color:TEXT_PRIMARY,fontSize:13.5,outline:"none",transition:"border-color 0.15s",fontFamily:APPLE_FONT};
