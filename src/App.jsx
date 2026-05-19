@@ -107,7 +107,30 @@ async function uploadFileToDrive(accessToken, fileName, base64Data, mimeType, fo
 async function getOrCreateSubfolder(accessToken, parentId, name) {
   const cacheKey = `subfolder_${parentId}_${name}`;
   const cached = localStorage.getItem(cacheKey);
-  if (cached) return cached;
+
+  // Cache validieren: existiert der Folder noch, ist er nicht im Papierkorb,
+  // und liegt er tatsächlich noch im erwarteten Parent?
+  if (cached) {
+    try {
+      const checkResp = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${cached}?fields=id,trashed,parents`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      if (checkResp.ok) {
+        const meta = await checkResp.json();
+        if (!meta.trashed && Array.isArray(meta.parents) && meta.parents.includes(parentId)) {
+          return cached;
+        }
+      } else if (checkResp.status === 401) {
+        clearAccessToken();
+        throw new Error("Session abgelaufen. Bitte neu einloggen.");
+      }
+    } catch (e) {
+      if (e.message && e.message.includes("abgelaufen")) throw e;
+      // Sonstige Netzwerkfehler: ignorieren, Fallback auf neue Anlage
+    }
+    localStorage.removeItem(cacheKey);
+  }
 
   const q = `'${parentId}' in parents and name='${name}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
   const listUrl = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name)`;
