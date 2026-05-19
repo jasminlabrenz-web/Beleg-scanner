@@ -13,9 +13,14 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || "";
 
 const DEFAULT_FOLDERS = [
-  { id: "1wpUyCfh4XSXoysVnVUZxkol8H9KzuLhN", name: "März" },
-  { id: "1c-q56hFiknGU9b4OUHwE6xZ-g7i3yotm", name: "April" },
-  { id: "1arlYM5innCGpY0TTUlwZ47vKEcslvmLx", name: "Mai" },
+  { id: "1WVRpggmT2pHkzv0DzVAWu9r2vcDB0GP6", name: "Mai" },
+  { id: "1guqonjZ7Zq2cHdWZSy9enUYv_n0wiryn", name: "Juni" },
+  { id: "1OS3hu7Ll8bkPq_zQxHtnugHPqqpDa3Gi", name: "Juli" },
+  { id: "1hTwp4vhC2rEfXmAET71yLisgeyuQPIWY", name: "August" },
+  { id: "1xvpIseZPenDbfO4MTBL99bY9JVEOKnOI", name: "September" },
+  { id: "1sVEdya1SYEMqvFyNdBcohDn6fZm_pXtg", name: "Oktober" },
+  { id: "1M8DYDGOTzuT5h5UUDjiEmEgo14epQHEV", name: "November" },
+  { id: "1QLeP2j1XSW707HRmhruAkNxqBVgsxniY", name: "Dezember" },
 ];
 
 const KATEGORIEN = ["Rechnung", "Quittung", "Vertrag", "Kontoauszug", "Sonstiges"];
