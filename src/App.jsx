@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { jsPDF } from "jspdf";
 
 // ============================================================
 // KONFIGURATION — hier anpassen!
@@ -41,15 +42,7 @@ function parseHashToken() {
   return params.get("access_token");
 }
 
-async function uploadFileToDrive(accessToken, fileName, base64Data, mimeType, folderId) {
-  // Convert base64 to blob
-  const byteString = atob(base64Data);
-  const ab = new ArrayBuffer(byteString.length);
-  const ia = new Uint8Array(ab);
-  for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-  const blob = new Blob([ab], { type: mimeType });
-
-  // Multipart upload
+async function uploadBlobToDrive(accessToken, fileName, blob, mimeType, folderId) {
   const metadata = { name: fileName, mimeType, parents: [folderId] };
   const form = new FormData();
   form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
@@ -67,6 +60,126 @@ async function uploadFileToDrive(accessToken, fileName, base64Data, mimeType, fo
     throw new Error(err.error?.message || `Upload fehlgeschlagen (${resp.status})`);
   }
   return resp.json();
+}
+
+async function uploadFileToDrive(accessToken, fileName, base64Data, mimeType, folderId) {
+  const byteString = atob(base64Data);
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+  const blob = new Blob([ab], { type: mimeType });
+  return uploadBlobToDrive(accessToken, fileName, blob, mimeType, folderId);
+}
+
+async function getOrCreateSubfolder(accessToken, parentId, name) {
+  const cacheKey = `subfolder_${parentId}_${name}`;
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) return cached;
+
+  const q = `'${parentId}' in parents and name='${name}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  const listUrl = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name)`;
+  const listResp = await fetch(listUrl, { headers: { Authorization: `Bearer ${accessToken}` } });
+  if (listResp.ok) {
+    const data = await listResp.json();
+    if (data.files && data.files.length > 0) {
+      localStorage.setItem(cacheKey, data.files[0].id);
+      return data.files[0].id;
+    }
+  } else if (listResp.status === 401) {
+    clearAccessToken();
+    throw new Error("Session abgelaufen. Bitte neu einloggen.");
+  }
+
+  const createResp = await fetch("https://www.googleapis.com/drive/v3/files", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ name, mimeType: "application/vnd.google-apps.folder", parents: [parentId] }),
+  });
+  if (!createResp.ok) {
+    const err = await createResp.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Ordner anlegen fehlgeschlagen (${createResp.status})`);
+  }
+  const created = await createResp.json();
+  localStorage.setItem(cacheKey, created.id);
+  return created.id;
+}
+
+function slugify(s) {
+  return (s || "")
+    .replace(/[äÄ]/g, "ae").replace(/[öÖ]/g, "oe").replace(/[üÜ]/g, "ue").replace(/[ß]/g, "ss")
+    .replace(/[^a-zA-Z0-9-_]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+}
+
+async function generateBewirtungsPDF({ datum, anlass, personen, zahlung, dataUrl, type, name }) {
+  const pdf = new jsPDF({ unit: "mm", format: "a4" });
+  const pageW = 210, pageH = 297, margin = 18;
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(16);
+  pdf.text("Bewirtungsbeleg", pageW / 2, margin + 4, { align: "center" });
+  pdf.setFontSize(9);
+  pdf.setFont("helvetica", "normal");
+  pdf.setTextColor(120);
+  pdf.text("Nachweis nach § 4 Abs. 5 Nr. 2 EStG", pageW / 2, margin + 10, { align: "center" });
+  pdf.setTextColor(40);
+
+  let y = margin + 20;
+  const rows = [
+    ["Tag der Bewirtung", datum || "—"],
+    ["Anlass / Grund", anlass || "—"],
+    ["Bewirtete Personen", personen || "—"],
+    ["Zahlungsart", zahlung === "bar" ? "Bar" : "Bank / Karte"],
+  ];
+
+  pdf.setDrawColor(220);
+  pdf.setLineWidth(0.2);
+  const labelX = margin;
+  const valueX = margin + 52;
+  const maxValueW = pageW - margin - valueX;
+
+  for (const [k, v] of rows) {
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.text(k, labelX, y);
+    pdf.setFont("helvetica", "normal");
+    const lines = pdf.splitTextToSize(String(v), maxValueW);
+    pdf.text(lines, valueX, y);
+    const rowH = Math.max(7, lines.length * 5 + 2);
+    pdf.line(margin, y + rowH - 3, pageW - margin, y + rowH - 3);
+    y += rowH;
+  }
+
+  y += 6;
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(10);
+  pdf.text("Beleg:", margin, y);
+  y += 4;
+
+  if (type && type.startsWith("image/")) {
+    const img = await new Promise((res, rej) => {
+      const im = new Image();
+      im.onload = () => res(im);
+      im.onerror = () => rej(new Error("Bild konnte nicht geladen werden"));
+      im.src = dataUrl;
+    });
+    const availW = pageW - 2 * margin;
+    const availH = pageH - margin - y;
+    let w = availW;
+    let h = (img.height / img.width) * w;
+    if (h > availH) { h = availH; w = (img.width / img.height) * h; }
+    const x = (pageW - w) / 2;
+    const fmt = type.includes("png") ? "PNG" : "JPEG";
+    pdf.addImage(dataUrl, fmt, x, y, w, h);
+  } else {
+    pdf.setFont("helvetica", "italic");
+    pdf.setFontSize(9);
+    pdf.setTextColor(120);
+    pdf.text(`(Beleg liegt als separate Datei bei: ${name})`, margin, y + 5);
+  }
+
+  return pdf.output("blob");
 }
 
 // ============================================================
@@ -143,8 +256,14 @@ export default function BelegScanner() {
 
   const ts = () => {
     const n = new Date();
-    return `${n.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"}).replace(/\./g,"-")}_${n.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}).replace(":","")}`; 
+    return `${n.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"}).replace(/\./g,"-")}_${n.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}).replace(":","")}`;
   };
+  const todayIso = () => {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`;
+  };
+  const defaultMeta = () => ({ datum: todayIso(), zahlung: "bar", isBewirtung: false, anlass: "", personen: "" });
+  const updateFileMeta = (id, patch) => setFiles(p => p.map(f => f.id === id ? { ...f, ...patch } : f));
 
   // ========== CAMERA ==========
   const startCam = async () => {
@@ -167,7 +286,7 @@ export default function BelegScanner() {
     c.width = v.videoWidth; c.height = v.videoHeight;
     c.getContext("2d").drawImage(v, 0, 0);
     const du = c.toDataURL("image/jpeg", 0.9);
-    setFiles(p => [...p, { id: Date.now(), name: `${kat}_${ts()}.jpg`, dataUrl: du, type: "image/jpeg", size: Math.round(du.length * 0.75), kat }]);
+    setFiles(p => [...p, { id: Date.now(), name: `${kat}_${ts()}.jpg`, dataUrl: du, type: "image/jpeg", size: Math.round(du.length * 0.75), kat, ...defaultMeta() }]);
     stopCam(); setTab(TAB.PREVIEW);
   };
 
@@ -175,7 +294,7 @@ export default function BelegScanner() {
   const addFiles = (fl) => {
     Array.from(fl).forEach(f => {
       const r = new FileReader();
-      r.onload = e => setFiles(p => [...p, { id: Date.now() + Math.random(), name: f.name, dataUrl: e.target.result, type: f.type, size: f.size, kat }]);
+      r.onload = e => setFiles(p => [...p, { id: Date.now() + Math.random(), name: f.name, dataUrl: e.target.result, type: f.type, size: f.size, kat, ...defaultMeta() }]);
       r.readAsDataURL(f);
     });
     setTab(TAB.PREVIEW);
@@ -189,16 +308,29 @@ export default function BelegScanner() {
     if (!token) { setErr("Bitte erst mit Google einloggen."); return; }
     if (!files.length) return;
     setUploading(true); setResults([]); setUploadProgress(0);
-    const fn = DEFAULT_FOLDERS.find(f => f.id === folder)?.name || "Belege";
+    const monatsName = DEFAULT_FOLDERS.find(f => f.id === folder)?.name || "Belege";
     const res = [];
 
     for (let i = 0; i < files.length; i++) {
       const f = files[i];
       setUploadProgress(Math.round(((i) / files.length) * 100));
       try {
-        const base64 = f.dataUrl.split(",")[1];
-        await uploadFileToDrive(token, f.name, base64, f.type, folder);
-        res.push({ id: f.id, name: f.name, ok: true, msg: "Erfolgreich hochgeladen" });
+        const subName = f.zahlung === "bank" ? "Bank" : "Bar";
+        const targetFolderId = await getOrCreateSubfolder(token, folder, subName);
+
+        let uploadedName;
+        if (f.isBewirtung) {
+          const pdfBlob = await generateBewirtungsPDF(f);
+          const stichwort = slugify(f.anlass) || slugify(f.personen) || "beleg";
+          uploadedName = `Bewirtung_${f.datum || "ohne-datum"}_${stichwort}.pdf`;
+          await uploadBlobToDrive(token, uploadedName, pdfBlob, "application/pdf", targetFolderId);
+        } else {
+          const base64 = f.dataUrl.split(",")[1];
+          const ext = f.type === "application/pdf" ? "pdf" : (f.type.includes("png") ? "png" : "jpg");
+          uploadedName = `${f.kat}_${f.datum || "ohne-datum"}_${String(f.id).slice(-4)}.${ext}`;
+          await uploadFileToDrive(token, uploadedName, base64, f.type, targetFolderId);
+        }
+        res.push({ id: f.id, name: uploadedName, folder: `${monatsName} / ${subName}`, ok: true, msg: "Erfolgreich hochgeladen" });
       } catch (e) {
         res.push({ id: f.id, name: f.name, ok: false, msg: e.message });
         if (e.message.includes("abgelaufen")) { setAuthed(false); break; }
@@ -209,7 +341,7 @@ export default function BelegScanner() {
     setResults(res);
     const ok = res.filter(r => r.ok);
     if (ok.length) {
-      setHistory(p => [...ok.map(r => ({ name: r.name, folder: fn, ts: new Date().toLocaleString("de-DE") })), ...p]);
+      setHistory(p => [...ok.map(r => ({ name: r.name, folder: r.folder, ts: new Date().toLocaleString("de-DE") })), ...p]);
     }
     setUploading(false);
   };
@@ -445,23 +577,61 @@ export default function BelegScanner() {
                   <input ref={fileRef} type="file" accept="image/*,.pdf" multiple onChange={onFileInput} style={{display:"none"}}/>
                 </div>
 
-                <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:7,maxHeight:260,overflowY:"auto",paddingRight:3}}>
+                <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:10,maxHeight:420,overflowY:"auto",paddingRight:3}}>
                   {files.map(f=>(
-                    <div key={f.id} style={{display:"flex",alignItems:"center",gap:9,padding:9,borderRadius:11,background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.05)"}}>
-                      {f.type.startsWith("image/")&&f.dataUrl?(
-                        <img src={f.dataUrl} alt="" style={{width:44,height:44,borderRadius:7,objectFit:"cover"}}/>
-                      ):(
-                        <div style={{width:44,height:44,borderRadius:7,background:"rgba(232,25,122,0.06)",display:"flex",alignItems:"center",justifyContent:"center"}}><Icon name="file" size={18} color="#E8197A"/></div>
-                      )}
-                      <div style={{flex:1,minWidth:0}}>
-                        <input value={f.name} onChange={e=>setFiles(p=>p.map(pf=>pf.id===f.id?{...pf,name:e.target.value}:pf))} style={{
-                          width:"100%",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.06)",color:"#eee",fontSize:12,fontWeight:500,padding:"2px 0",outline:"none",
-                        }}/>
-                        <p style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:2}}>{f.kat} · {f.size>0?`${(f.size/1024).toFixed(0)} KB`:""}</p>
+                    <div key={f.id} style={{padding:11,borderRadius:13,background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.05)"}}>
+                      <div style={{display:"flex",alignItems:"center",gap:9}}>
+                        {f.type.startsWith("image/")&&f.dataUrl?(
+                          <img src={f.dataUrl} alt="" style={{width:44,height:44,borderRadius:7,objectFit:"cover"}}/>
+                        ):(
+                          <div style={{width:44,height:44,borderRadius:7,background:"rgba(232,25,122,0.06)",display:"flex",alignItems:"center",justifyContent:"center"}}><Icon name="file" size={18} color="#E8197A"/></div>
+                        )}
+                        <div style={{flex:1,minWidth:0}}>
+                          <input value={f.name} onChange={e=>updateFileMeta(f.id,{name:e.target.value})} style={{
+                            width:"100%",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.06)",color:"#eee",fontSize:12,fontWeight:500,padding:"2px 0",outline:"none",
+                          }}/>
+                          <p style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:2}}>{f.kat} · {f.size>0?`${(f.size/1024).toFixed(0)} KB`:""}</p>
+                        </div>
+                        <button onClick={()=>rmFile(f.id)} style={{background:"none",border:"none",cursor:"pointer",padding:3,opacity:0.35}}>
+                          <Icon name="trash" size={15} color="#ff6b6b"/>
+                        </button>
                       </div>
-                      <button onClick={()=>rmFile(f.id)} style={{background:"none",border:"none",cursor:"pointer",padding:3,opacity:0.35}}>
-                        <Icon name="trash" size={15} color="#ff6b6b"/>
-                      </button>
+
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:10}}>
+                        <div>
+                          <label style={{...lbl,fontSize:9}}>Datum</label>
+                          <input type="date" value={f.datum||""} onChange={e=>updateFileMeta(f.id,{datum:e.target.value})} style={miniInput}/>
+                        </div>
+                        <div>
+                          <label style={{...lbl,fontSize:9}}>Zahlung</label>
+                          <div style={{display:"flex",gap:5,marginTop:6}}>
+                            {["bar","bank"].map(z=>(
+                              <button key={z} onClick={()=>updateFileMeta(f.id,{zahlung:z})} style={{
+                                flex:1,padding:"7px 6px",borderRadius:8,fontSize:11,fontWeight:600,cursor:"pointer",
+                                border:f.zahlung===z?"1px solid #E8197A":"1px solid rgba(255,255,255,0.07)",
+                                background:f.zahlung===z?"rgba(232,25,122,0.1)":"transparent",
+                                color:f.zahlung===z?"#E8197A":"rgba(255,255,255,0.45)",
+                                textTransform:"capitalize",
+                              }}>{z==="bar"?"Bar":"Bank/Karte"}</button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <label style={{display:"flex",alignItems:"center",gap:7,marginTop:10,cursor:"pointer",userSelect:"none"}}>
+                        <input type="checkbox" checked={!!f.isBewirtung} onChange={e=>updateFileMeta(f.id,{isBewirtung:e.target.checked})} style={{accentColor:"#E8197A",width:14,height:14}}/>
+                        <span style={{fontSize:11.5,fontWeight:600,color:f.isBewirtung?"#E8197A":"rgba(255,255,255,0.5)"}}>Bewirtungsbeleg (mit Pflichtangaben)</span>
+                      </label>
+
+                      {f.isBewirtung && (
+                        <div style={{marginTop:8,padding:10,borderRadius:9,background:"rgba(232,25,122,0.04)",border:"1px solid rgba(232,25,122,0.12)"}}>
+                          <label style={{...lbl,fontSize:9}}>Anlass / Grund der Bewirtung</label>
+                          <input value={f.anlass||""} onChange={e=>updateFileMeta(f.id,{anlass:e.target.value})} placeholder="z.B. Geschäftsessen Projektabstimmung" style={miniInput}/>
+                          <label style={{...lbl,fontSize:9,marginTop:9}}>Bewirtete Personen</label>
+                          <textarea value={f.personen||""} onChange={e=>updateFileMeta(f.id,{personen:e.target.value})} placeholder="z.B. Max Mustermann (Firma X), Erika Müller (Firma Y)" rows={2} style={{...miniInput,resize:"vertical",minHeight:48,fontFamily:"inherit"}}/>
+                          <p style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:6,lineHeight:1.5}}>Tag der Bewirtung = Beleg-Datum oben. Wird als PDF mit Pflichtangaben + Foto in Drive abgelegt.</p>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -519,3 +689,4 @@ const sel={width:"100%",marginTop:6,padding:"10px 14px",background:"rgba(255,255
 const btnP={padding:"13px 18px",borderRadius:13,background:"linear-gradient(135deg,#E8197A,#c41568)",border:"none",color:"#fff",fontSize:13.5,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:7,transition:"all 0.15s"};
 const btnO={padding:"13px",borderRadius:13,background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.55)",fontSize:13,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:7};
 const camB={width:42,height:42,borderRadius:"50%",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.13)",color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"};
+const miniInput={width:"100%",marginTop:5,padding:"7px 10px",background:"rgba(255,255,255,0.035)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,color:"#eee",fontSize:12,outline:"none"};
